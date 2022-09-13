@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import boto3
 
@@ -48,7 +49,6 @@ if __name__ == "__main__":
     os.chdir(path_to_module)
     module_root = f"{current_dir}/{module}"
     result = subprocess.run(["pip3", "install", "-r", "requirements.txt", "--target", module_root])
-    # subprocess.run(["pip3", "install", "--no-binary=pendulum", "pendulum", "--target", module_root])
     result = subprocess.run(["echo", "hello"])
     os.chdir(current_dir)
 
@@ -74,7 +74,6 @@ if __name__ == "__main__":
         for filename in os.listdir(module_root):
             path = f"{module_root}/{filename}"
             if not path.endswith("dist-info") and not filename.startswith("_"):
-                # shutil.make_archive(f"{path}", "zip", path)
                 if os.path.isdir(path) and not path.endswith("dist-info"):
                     make_archive(path, f"{path}.zip")
                     object = s3.Bucket(bucket).upload_file(f"{path}.zip", f"{module}/{filename}.zip", ExtraArgs={"ACL": "public-read"})
@@ -82,9 +81,10 @@ if __name__ == "__main__":
                     object = s3.Bucket(bucket).upload_file(f"{path}", f"{module}/{filename}", ExtraArgs={"ACL": "public-read"})
         # package connector module
         path_to_connector_module_to_zip = f"{path_to_module}/{module.replace('-', '_')}"
-        print(f"path to connector module to zip: {path_to_connector_module_to_zip}")
-        # shutil.make_archive(f"{module_root}/{module}", "zip", path_to_connector_module_to_zip)
-        make_archive(path_to_connector_module_to_zip, f"{module_root}/{module.replace('-', '_')}.zip")
-        object = s3.Bucket(bucket).upload_file(
-            f"{module_root}/{module.replace('-', '_')}.zip", f"{module}/{module.replace('-', '_')}.zip", ExtraArgs={"ACL": "public-read"}
-        )
+        path_to_inner_module = f"{path_to_module}/{module.replace('-', '_')}"
+        for filename in Path(path_to_inner_module).rglob("*.*"):
+            relative_filename = filename.relative_to(path_to_module)
+            print(f"uploading module filename: {relative_filename}")
+            object = s3.Bucket(bucket).upload_file(
+                f"{path_to_module}/{relative_filename}", f"{module}/{relative_filename}", ExtraArgs={"ACL": "public-read"}
+            )
