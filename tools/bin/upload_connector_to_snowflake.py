@@ -64,27 +64,23 @@ if __name__ == "__main__":
         # patch jsonschema https://github.com/python-jsonschema/jsonschema/issues/628
         json_schema_init_filepath = f"{module_root}/jsonschema/__init__.py"
         if os.path.exists(json_schema_init_filepath):
-            print("exists!")
             with open(json_schema_init_filepath, "r") as sources:
                 lines = sources.readlines()
             with open(json_schema_init_filepath, "w") as sources:
                 for line in lines:
                     sources.write(line.replace('metadata.version("jsonschema")', "'3.2.0'"))
-        else:
-            print("nope")
 
         # package dependencies
-        # for filename in os.listdir(module_root):
-        #    path = f"{module_root}/{filename}"
-        #    if not path.endswith("dist-info") and not filename.startswith("_"):
-        #        # shutil.make_archive(f"{path}", "zip", path)
-        #        if os.path.isdir(path) and not path.endswith("dist-info"):
-        #            make_archive(path, f"{path}.zip")
-        #            object = s3.Bucket(bucket).upload_file(f"{path}.zip", f"{module}/{filename}.zip", ExtraArgs={'ACL': 'public-read'})
-        #        else:
-        #            object = s3.Bucket(bucket).upload_file(f"{path}", f"{module}/{filename}", ExtraArgs={'ACL': 'public-read'})
+        for filename in os.listdir(module_root):
+            path = f"{module_root}/{filename}"
+            if not path.endswith("dist-info") and not filename.startswith("_"):
+                # shutil.make_archive(f"{path}", "zip", path)
+                if os.path.isdir(path) and not path.endswith("dist-info"):
+                    make_archive(path, f"{path}.zip")
+                    object = s3.Bucket(bucket).upload_file(f"{path}.zip", f"{module}/{filename}.zip", ExtraArgs={"ACL": "public-read"})
+                else:
+                    object = s3.Bucket(bucket).upload_file(f"{path}", f"{module}/{filename}", ExtraArgs={"ACL": "public-read"})
         # package connector module
-        print(module.replace("-", "_"))
         path_to_connector_module_to_zip = f"{path_to_module}/{module.replace('-', '_')}"
         print(f"path to connector module to zip: {path_to_connector_module_to_zip}")
         # shutil.make_archive(f"{module_root}/{module}", "zip", path_to_connector_module_to_zip)
