@@ -5,36 +5,41 @@
 import requests
 
 
-def patch_send():
+def patch_send(session):
     import requests
 
-    def new_session_send(self, request, **kwargs):
-        print(f"request: {request}")
-        print(f"kwargs: {kwargs}")
+    def convert_request_to_external_function_input(request: requests.PreparedRequest):
+        body = request.body
+        headers = request.headers
+        url = request.url
+        return {"body": body, "headers": headers, "url": url}
+
+    def convert_external_function_output_to_response(output) -> requests.Response:
         response = requests.Response()
-        response.code = "expired"
-        response.error_type = "expired"
-        response.status_code = 400
-        response._content = b'{ "key" : "a" }'
+        response.status_code = 200
+        actual_output = output[0].as_dict()["ALEX_TEST_DB.PUBLIC.TEST_EXTERNAL_FUNCTION()"]
+        response._content = actual_output.encode("ascii")  # not sure about this!
+        return response
+
+    def new_session_send(self, request, **kwargs):
+        # convert to external function arguments
+        # args = convert_request_to_external_function_input(request)
+
+        # call external function
+        if session:
+            # FIXME: pass the args to the external function...
+            output_from_external_function = session.sql("select ALEX_TEST_DB.PUBLIC.test_external_function();").collect()
+            response = convert_external_function_output_to_response(output_from_external_function)
+        else:
+            content = b'{"data": "hello"}'
+            response = requests.Response()
+            response.status_code = 200
+            response._content = content
         return response
 
     requests.sessions.Session.send = new_session_send
 
 
-def convert_request_to_external_function_input(request: requests.Request):
-    body = request.json()
-    headers = request.headers()
-    query_params = request.params
-    return {"body": body, "headers": headers, "params": query_params}
-
-
-def convert_external_function_output_to_response(output) -> requests.Response:
-    response = requests.Response()
-    response.status_code = 200
-    response._content = output.encode("ascii")  # not sure about this!
-    return response
-
-
+patch_send(None)
 result = requests.get("https://w72cfwmned.execute-api.us-west-1.amazonaws.com/stage").json()
-
 print(result)
