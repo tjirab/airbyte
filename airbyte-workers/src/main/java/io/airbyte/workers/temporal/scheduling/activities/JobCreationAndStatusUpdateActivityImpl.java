@@ -66,6 +66,7 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 @Requires(property = "airbyte.worker.plane",
           pattern = "(?i)^(?!data_plane).*")
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndStatusUpdateActivity {
 
   @Inject
