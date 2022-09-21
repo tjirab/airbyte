@@ -22,7 +22,7 @@ public class SpecWorkflowImpl implements SpecWorkflow {
   @Trace(operationName = "workflow.spec")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig, final IntegrationLauncherConfig launcherConfig) {
-    TraceUtils.addTagsToTrace(Map.of("job.id", jobRunConfig.getJobId(), "docker.image", launcherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "docker-image", launcherConfig.getDockerImage()));
     return activity.run(jobRunConfig, launcherConfig);
   }
 

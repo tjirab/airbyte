@@ -25,7 +25,7 @@ public class DiscoverCatalogWorkflowImpl implements DiscoverCatalogWorkflow {
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig,
                                 final IntegrationLauncherConfig launcherConfig,
                                 final StandardDiscoverCatalogInput config) {
-    TraceUtils.addTagsToTrace(Map.of("job.id", jobRunConfig.getJobId(), "docker.image", launcherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "docker-image", launcherConfig.getDockerImage()));
     return activity.run(jobRunConfig, launcherConfig, config);
   }
 

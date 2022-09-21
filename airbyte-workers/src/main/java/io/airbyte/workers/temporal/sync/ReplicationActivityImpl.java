@@ -4,6 +4,7 @@
 
 package io.airbyte.workers.temporal.sync;
 
+import datadog.trace.api.Trace;
 import io.airbyte.api.client.AirbyteApiClient;
 import io.airbyte.api.client.invoker.generated.ApiException;
 import io.airbyte.api.client.model.generated.JobIdRequestBody;
@@ -94,6 +95,7 @@ public class ReplicationActivityImpl implements ReplicationActivity {
   @Inject
   private AirbyteApiClient airbyteApiClient;
 
+  @Trace(operationName="activity.replication")
   @Override
   public StandardSyncOutput replicate(final JobRunConfig jobRunConfig,
                                       final IntegrationLauncherConfig sourceLauncherConfig,

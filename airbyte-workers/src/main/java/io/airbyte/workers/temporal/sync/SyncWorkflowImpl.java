@@ -55,8 +55,8 @@ public class SyncWorkflowImpl implements SyncWorkflow {
                                 final StandardSyncInput syncInput,
                                 final UUID connectionId) {
 
-    TraceUtils.addTagsToTrace(Map.of("connection.id", connectionId.toString(), "job.id", jobRunConfig.getJobId(), "source.docker.image", sourceLauncherConfig.getDockerImage(),
-        "destination.docker.image", destinationLauncherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("connection-id", connectionId.toString(), "job-id", jobRunConfig.getJobId(), "source.docker-image", sourceLauncherConfig.getDockerImage(),
+        "destination.docker-image", destinationLauncherConfig.getDockerImage()));
 
     final int version = Workflow.getVersion(VERSION_LABEL, Workflow.DEFAULT_VERSION, CURRENT_VERSION);
     StandardSyncOutput syncOutput = replicationActivity.replicate(jobRunConfig, sourceLauncherConfig, destinationLauncherConfig, syncInput);

@@ -35,7 +35,7 @@ public class CheckConnectionWorkflowImpl implements CheckConnectionWorkflow {
 
     final CheckConnectionInput checkInput = new CheckConnectionInput(jobRunConfig, launcherConfig, connectionConfiguration);
 
-    TraceUtils.addTagsToTrace(Map.of("job.id", jobRunConfig.getJobId(), "docker.image", launcherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "docker-image", launcherConfig.getDockerImage()));
 
     final int jobOutputVersion =
         Workflow.getVersion(CHECK_JOB_OUTPUT_TAG, Workflow.DEFAULT_VERSION, CHECK_JOB_OUTPUT_TAG_CURRENT_VERSION);

@@ -153,7 +153,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
   @Override
   public void run(final ConnectionUpdaterInput connectionUpdaterInput) throws RetryableException {
     try {
-      TraceUtils.addTagsToTrace(Map.of("connection.id", connectionUpdaterInput.getConnectionId()));
+      TraceUtils.addTagsToTrace(Map.of("connection-id", connectionUpdaterInput.getConnectionId()));
       recordMetric(new RecordMetricInput(connectionUpdaterInput, Optional.empty(), OssMetricsRegistry.TEMPORAL_WORKFLOW_ATTEMPT, null));
       workflowDelay = getWorkflowRestartDelaySeconds();
 
