@@ -4,6 +4,7 @@
 
 package io.airbyte.workers.temporal.sync;
 
+import datadog.trace.api.Trace;
 import io.airbyte.config.NormalizationInput;
 import io.airbyte.config.NormalizationSummary;
 import io.airbyte.config.OperatorDbtInput;
@@ -14,10 +15,12 @@ import io.airbyte.config.StandardSyncOutput;
 import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
 import io.airbyte.persistence.job.models.JobRunConfig;
 import io.airbyte.protocol.models.ConfiguredAirbyteCatalog;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.temporal.annotations.TemporalActivityStub;
 import io.temporal.workflow.Workflow;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
@@ -44,12 +47,16 @@ public class SyncWorkflowImpl implements SyncWorkflow {
   @TemporalActivityStub(activityOptionsBeanName = "shortActivityOptions")
   private NormalizationSummaryCheckActivity normalizationSummaryCheckActivity;
 
+  @Trace(operationName = "workflow.sync")
   @Override
   public StandardSyncOutput run(final JobRunConfig jobRunConfig,
                                 final IntegrationLauncherConfig sourceLauncherConfig,
                                 final IntegrationLauncherConfig destinationLauncherConfig,
                                 final StandardSyncInput syncInput,
                                 final UUID connectionId) {
+
+    TraceUtils.addTagsToTrace(Map.of("connection.id", connectionId.toString(), "job.id", jobRunConfig.getJobId(), "source.docker.image", sourceLauncherConfig.getDockerImage(),
+        "destination.docker.image", destinationLauncherConfig.getDockerImage()));
 
     final int version = Workflow.getVersion(VERSION_LABEL, Workflow.DEFAULT_VERSION, CURRENT_VERSION);
     StandardSyncOutput syncOutput = replicationActivity.replicate(jobRunConfig, sourceLauncherConfig, destinationLauncherConfig, syncInput);

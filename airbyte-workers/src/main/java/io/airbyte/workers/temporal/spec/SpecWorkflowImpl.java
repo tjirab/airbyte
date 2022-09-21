@@ -4,10 +4,13 @@
 
 package io.airbyte.workers.temporal.spec;
 
+import datadog.trace.api.Trace;
 import io.airbyte.config.ConnectorJobOutput;
 import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
 import io.airbyte.persistence.job.models.JobRunConfig;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.temporal.annotations.TemporalActivityStub;
+import java.util.Map;
 import javax.inject.Singleton;
 
 @Singleton
@@ -16,8 +19,10 @@ public class SpecWorkflowImpl implements SpecWorkflow {
   @TemporalActivityStub(activityOptionsBeanName = "specActivityOptions")
   private SpecActivity activity;
 
+  @Trace(operationName = "workflow.spec")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig, final IntegrationLauncherConfig launcherConfig) {
+    TraceUtils.addTagsToTrace(Map.of("job.id", jobRunConfig.getJobId(), "docker.image", launcherConfig.getDockerImage()));
     return activity.run(jobRunConfig, launcherConfig);
   }
 

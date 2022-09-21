@@ -5,6 +5,7 @@
 package io.airbyte.workers.temporal.scheduling;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import datadog.trace.api.Trace;
 import io.airbyte.config.ConnectorJobOutput;
 import io.airbyte.config.ConnectorJobOutput.OutputType;
 import io.airbyte.config.FailureReason;
@@ -19,6 +20,7 @@ import io.airbyte.config.StandardSyncSummary.ReplicationStatus;
 import io.airbyte.metrics.lib.OssMetricsRegistry;
 import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
 import io.airbyte.persistence.job.models.JobRunConfig;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.WorkerConstants;
 import io.airbyte.workers.helper.FailureHelper;
 import io.airbyte.workers.temporal.TemporalJobType;
@@ -76,6 +78,7 @@ import io.temporal.workflow.ChildWorkflowOptions;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -146,9 +149,11 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
 
   private Duration workflowDelay;
 
+  @Trace(operationName = "workflow.connection.manager")
   @Override
   public void run(final ConnectionUpdaterInput connectionUpdaterInput) throws RetryableException {
     try {
+      TraceUtils.addTagsToTrace(Map.of("connection.id", connectionUpdaterInput.getConnectionId()));
       recordMetric(new RecordMetricInput(connectionUpdaterInput, Optional.empty(), OssMetricsRegistry.TEMPORAL_WORKFLOW_ATTEMPT, null));
       workflowDelay = getWorkflowRestartDelaySeconds();
 
@@ -883,5 +888,4 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
 
     return workflowConfigActivity.getWorkflowRestartDelaySeconds();
   }
-
 }

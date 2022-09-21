@@ -219,7 +219,9 @@ subprojects { subproj ->
         // It is not necessarily used for all subprojects. Non-TAR producing projects can ignore this.
         tasks.register("copyGeneratedTar", Copy) {
             dependsOn copyDocker
-            dependsOn distTar
+            if (tasks.findByPath('distTar')) {
+                dependsOn distTar
+            }
             from('build/distributions') {
                 // Assume that tars are named <parent-project-name>-<child-project-name>-*.tar.
                 // Because we only have a handle to the child project, and to keep things simple,

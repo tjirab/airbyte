@@ -4,6 +4,7 @@
 
 package io.airbyte.workers.config;
 
+import datadog.opentracing.DDTracer;
 import io.airbyte.analytics.TrackingClient;
 import io.airbyte.commons.features.EnvVariableFeatureFlags;
 import io.airbyte.commons.features.FeatureFlags;
@@ -168,8 +169,10 @@ public class ApplicationBeanFactory {
     return MetricClientFactory.getMetricClient();
   }
 
+  @Singleton
+  public DDTracer dataDogTracer() { return DDTracer.builder().build(); }
+
   private <T> T convertToEnum(final String value, final Function<String, T> creatorFunction, final T defaultValue) {
     return StringUtils.isNotEmpty(value) ? creatorFunction.apply(value.toUpperCase(Locale.ROOT)) : defaultValue;
   }
-
 }

@@ -59,6 +59,7 @@ dependencies {
     }
     implementation project(':airbyte-scheduler:scheduler-models')
     implementation project(':airbyte-api')
+    implementation libs.bundles.datadog
 
     testAnnotationProcessor platform(libs.micronaut.bom)
     testAnnotationProcessor libs.bundles.micronaut.test.annotation.processor
