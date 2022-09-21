@@ -4,6 +4,7 @@
 
 package io.airbyte.workers.temporal.spec;
 
+import datadog.trace.api.Trace;
 import io.airbyte.api.client.AirbyteApiClient;
 import io.airbyte.commons.functional.CheckedSupplier;
 import io.airbyte.config.Configs.WorkerEnvironment;
@@ -12,6 +13,7 @@ import io.airbyte.config.JobGetSpecConfig;
 import io.airbyte.config.helpers.LogConfigs;
 import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
 import io.airbyte.persistence.job.models.JobRunConfig;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.Worker;
 import io.airbyte.workers.WorkerConfigs;
 import io.airbyte.workers.general.DefaultGetSpecWorker;
@@ -25,6 +27,7 @@ import io.micronaut.context.annotation.Value;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -53,8 +56,10 @@ public class SpecActivityImpl implements SpecActivity {
   @Value("${airbyte.version}")
   private String airbyteVersion;
 
+  @Trace(operationName="activity")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig, final IntegrationLauncherConfig launcherConfig) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId()));
     final Supplier<JobGetSpecConfig> inputSupplier = () -> new JobGetSpecConfig().withDockerImage(launcherConfig.getDockerImage());
 
     final ActivityExecutionContext context = Activity.getExecutionContext();

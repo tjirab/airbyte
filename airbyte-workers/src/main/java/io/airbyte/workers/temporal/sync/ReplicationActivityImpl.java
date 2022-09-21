@@ -28,6 +28,7 @@ import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
 import io.airbyte.persistence.job.models.JobRunConfig;
 import io.airbyte.workers.ContainerOrchestratorConfig;
 import io.airbyte.workers.RecordSchemaValidator;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.Worker;
 import io.airbyte.workers.WorkerConfigs;
 import io.airbyte.workers.WorkerConstants;
@@ -50,6 +51,7 @@ import io.micronaut.context.annotation.Value;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -95,12 +97,13 @@ public class ReplicationActivityImpl implements ReplicationActivity {
   @Inject
   private AirbyteApiClient airbyteApiClient;
 
-  @Trace(operationName="activity.replication")
+  @Trace(operationName="activity")
   @Override
   public StandardSyncOutput replicate(final JobRunConfig jobRunConfig,
                                       final IntegrationLauncherConfig sourceLauncherConfig,
                                       final IntegrationLauncherConfig destinationLauncherConfig,
                                       final StandardSyncInput syncInput) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "source.docker-image", sourceLauncherConfig.getDockerImage(), "destination.docker-image", destinationLauncherConfig.getDockerImage()));
     final ActivityExecutionContext context = Activity.getExecutionContext();
     return temporalUtils.withBackgroundHeartbeat(
         () -> {

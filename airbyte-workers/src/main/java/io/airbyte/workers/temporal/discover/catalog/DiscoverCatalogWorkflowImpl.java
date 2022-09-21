@@ -20,7 +20,7 @@ public class DiscoverCatalogWorkflowImpl implements DiscoverCatalogWorkflow {
   @TemporalActivityStub(activityOptionsBeanName = "discoveryActivityOptions")
   private DiscoverCatalogActivity activity;
 
-  @Trace(operationName = "workflow.discover.catalog")
+  @Trace(operationName = "workflow", resourceName = "DiscoverCatalogWorkflowImpl")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig,
                                 final IntegrationLauncherConfig launcherConfig,

@@ -5,6 +5,7 @@
 package io.airbyte.workers.temporal.discover.catalog;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import datadog.trace.api.Trace;
 import io.airbyte.api.client.AirbyteApiClient;
 import io.airbyte.commons.functional.CheckedSupplier;
 import io.airbyte.config.Configs.WorkerEnvironment;
@@ -14,6 +15,7 @@ import io.airbyte.config.helpers.LogConfigs;
 import io.airbyte.config.persistence.split_secrets.SecretsHydrator;
 import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
 import io.airbyte.persistence.job.models.JobRunConfig;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.Worker;
 import io.airbyte.workers.WorkerConfigs;
 import io.airbyte.workers.general.DefaultDiscoverCatalogWorker;
@@ -29,6 +31,7 @@ import io.micronaut.context.annotation.Value;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import java.nio.file.Path;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -60,10 +63,12 @@ public class DiscoverCatalogActivityImpl implements DiscoverCatalogActivity {
   @Value("${airbyte.version}")
   private String airbyteVersion;
 
+  @Trace(operationName="activity")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig,
                                 final IntegrationLauncherConfig launcherConfig,
                                 final StandardDiscoverCatalogInput config) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "docker-image", launcherConfig.getDockerImage()));
     final JsonNode fullConfig = secretsHydrator.hydrate(config.getConnectionConfiguration());
 
     final StandardDiscoverCatalogInput input = new StandardDiscoverCatalogInput()

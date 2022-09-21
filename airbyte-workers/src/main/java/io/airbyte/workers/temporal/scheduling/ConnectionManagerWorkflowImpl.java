@@ -149,7 +149,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
 
   private Duration workflowDelay;
 
-  @Trace(operationName = "workflow.connection.manager")
+  @Trace(operationName = "workflow", resourceName = "ConnectionManagerWorkflowImpl")
   @Override
   public void run(final ConnectionUpdaterInput connectionUpdaterInput) throws RetryableException {
     try {

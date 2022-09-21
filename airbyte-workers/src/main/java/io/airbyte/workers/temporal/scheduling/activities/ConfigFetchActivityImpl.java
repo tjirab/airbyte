@@ -5,6 +5,7 @@
 package io.airbyte.workers.temporal.scheduling.activities;
 
 import com.google.common.annotations.VisibleForTesting;
+import datadog.trace.api.Trace;
 import io.airbyte.config.Cron;
 import io.airbyte.config.StandardSync;
 import io.airbyte.config.StandardSync.ScheduleType;
@@ -15,6 +16,7 @@ import io.airbyte.config.persistence.ConfigRepository;
 import io.airbyte.persistence.job.JobPersistence;
 import io.airbyte.persistence.job.models.Job;
 import io.airbyte.validation.json.JsonValidationException;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.temporal.exception.RetryableException;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
@@ -23,6 +25,7 @@ import java.text.ParseException;
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -53,9 +56,11 @@ public class ConfigFetchActivityImpl implements ConfigFetchActivity {
   @Named("currentSecondsSupplier")
   private Supplier<Long> currentSecondsSupplier;
 
+  @Trace(operationName="activity")
   @Override
   public ScheduleRetrieverOutput getTimeToWait(final ScheduleRetrieverInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
       final StandardSync standardSync = configRepository.getStandardSync(input.getConnectionId());
 
       if (standardSync.getScheduleType() != null) {
@@ -153,6 +158,7 @@ public class ConfigFetchActivityImpl implements ConfigFetchActivity {
 
   }
 
+  @Trace(operationName="activity")
   @Override
   public GetMaxAttemptOutput getMaxAttempt() {
     return new GetMaxAttemptOutput(syncJobMaxAttempts);

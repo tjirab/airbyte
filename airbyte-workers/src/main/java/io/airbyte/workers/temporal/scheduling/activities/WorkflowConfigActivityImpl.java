@@ -5,6 +5,7 @@
 package io.airbyte.workers.temporal.scheduling.activities;
 
 import com.google.common.annotations.VisibleForTesting;
+import datadog.trace.api.Trace;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import java.time.Duration;
@@ -25,6 +26,7 @@ public class WorkflowConfigActivityImpl implements WorkflowConfigActivity {
             defaultValue = "600")
   private Long workflowRestartDelaySeconds;
 
+  @Trace(operationName="activity")
   @Override
   public Duration getWorkflowRestartDelaySeconds() {
     return Duration.ofSeconds(workflowRestartDelaySeconds);

@@ -5,6 +5,7 @@
 package io.airbyte.workers.temporal.check.connection;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import datadog.trace.api.Trace;
 import io.airbyte.api.client.AirbyteApiClient;
 import io.airbyte.commons.functional.CheckedSupplier;
 import io.airbyte.config.Configs.WorkerEnvironment;
@@ -15,6 +16,7 @@ import io.airbyte.config.StandardCheckConnectionOutput.Status;
 import io.airbyte.config.helpers.LogConfigs;
 import io.airbyte.config.persistence.split_secrets.SecretsHydrator;
 import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.Worker;
 import io.airbyte.workers.WorkerConfigs;
 import io.airbyte.workers.general.DefaultCheckConnectionWorker;
@@ -28,6 +30,7 @@ import io.micronaut.context.annotation.Value;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import java.nio.file.Path;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -57,8 +60,10 @@ public class CheckConnectionActivityImpl implements CheckConnectionActivity {
   @Value("${airbyte.version}")
   private String airbyteVersion;
 
+  @Trace(operationName="activity")
   @Override
   public ConnectorJobOutput runWithJobOutput(final CheckConnectionInput args) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", args.getJobRunConfig().getJobId(), "docker-image", args.getLauncherConfig().getDockerImage()));
     final JsonNode fullConfig = secretsHydrator.hydrate(args.getConnectionConfiguration().getConnectionConfiguration());
 
     final StandardCheckConnectionInput input = new StandardCheckConnectionInput()
@@ -80,8 +85,10 @@ public class CheckConnectionActivityImpl implements CheckConnectionActivity {
     return temporalAttemptExecution.get();
   }
 
+  @Trace(operationName="activity")
   @Override
   public StandardCheckConnectionOutput run(final CheckConnectionInput args) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", args.getJobRunConfig().getJobId(), "docker-image", args.getLauncherConfig().getDockerImage()));
     final ConnectorJobOutput output = runWithJobOutput(args);
     if (output.getFailureReason() != null) {
       return new StandardCheckConnectionOutput().withStatus(Status.FAILED).withMessage("Error checking connection");

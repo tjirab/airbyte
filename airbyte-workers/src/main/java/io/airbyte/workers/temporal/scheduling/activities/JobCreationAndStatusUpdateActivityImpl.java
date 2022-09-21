@@ -5,6 +5,7 @@
 package io.airbyte.workers.temporal.scheduling.activities;
 
 import com.google.common.collect.Lists;
+import datadog.trace.api.Trace;
 import io.airbyte.commons.docker.DockerUtils;
 import io.airbyte.commons.enums.Enums;
 import io.airbyte.config.AttemptFailureSummary;
@@ -41,6 +42,7 @@ import io.airbyte.persistence.job.tracker.JobTracker.JobState;
 import io.airbyte.protocol.models.StreamDescriptor;
 import io.airbyte.validation.json.JsonValidationException;
 import io.airbyte.workers.JobStatus;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.helper.FailureHelper;
 import io.airbyte.workers.run.TemporalWorkerRunFactory;
 import io.airbyte.workers.run.WorkerRun;
@@ -49,6 +51,7 @@ import io.micronaut.context.annotation.Requires;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -88,9 +91,11 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
   @Inject
   private JobErrorReporter jobErrorReporter;
 
+  @Trace(operationName="activity")
   @Override
   public JobCreationOutput createNewJob(final JobCreationInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
       // Fail non-terminal jobs first to prevent this activity from repeatedly trying to create a new job
       // and failing, potentially resulting in the workflow ending up in a quarantined state.
       // Another non-terminal job is not expected to exist at this point in the normal case, but this
@@ -149,9 +154,11 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public AttemptCreationOutput createNewAttempt(final AttemptCreationInput input) throws RetryableException {
     try {
+      TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
       final long jobId = input.getJobId();
       final Job createdJob = jobPersistence.getJob(jobId);
 
@@ -167,9 +174,11 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public AttemptNumberCreationOutput createNewAttemptNumber(final AttemptCreationInput input) throws RetryableException {
     try {
+      TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
       final long jobId = input.getJobId();
       final Job createdJob = jobPersistence.getJob(jobId);
 
@@ -185,9 +194,11 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public void jobSuccess(final JobSuccessInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
       final long jobId = input.getJobId();
       final int attemptId = input.getAttemptId();
 
@@ -212,8 +223,10 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public void jobSuccessWithAttemptNumber(final JobSuccessInputWithAttemptNumber input) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
     jobSuccess(new JobSuccessInput(
         input.getJobId(),
         input.getAttemptNumber(),
@@ -221,9 +234,11 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
         input.getStandardSyncOutput()));
   }
 
+  @Trace(operationName="activity")
   @Override
   public void jobFailure(final JobFailureInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
       final long jobId = input.getJobId();
       jobPersistence.failJob(jobId);
       final Job job = jobPersistence.getJob(jobId);
@@ -244,9 +259,11 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public void attemptFailure(final AttemptFailureInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
       final int attemptId = input.getAttemptId();
       final long jobId = input.getJobId();
       final AttemptFailureSummary failureSummary = input.getAttemptFailureSummary();
@@ -272,8 +289,10 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public void attemptFailureWithAttemptNumber(final AttemptNumberFailureInput input) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
     attemptFailure(new AttemptFailureInput(
         input.getJobId(),
         input.getAttemptNumber(),
@@ -282,9 +301,11 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
         input.getAttemptFailureSummary()));
   }
 
+  @Trace(operationName="activity")
   @Override
   public void jobCancelled(final JobCancelledInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
       final long jobId = input.getJobId();
       final int attemptId = input.getAttemptId();
       jobPersistence.failAttempt(jobId, attemptId);
@@ -301,8 +322,10 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public void jobCancelledWithAttemptNumber(final JobCancelledInputWithAttemptNumber input) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
     jobCancelled(new JobCancelledInput(
         input.getJobId(),
         input.getAttemptNumber(),
@@ -310,9 +333,11 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
         input.getAttemptFailureSummary()));
   }
 
+  @Trace(operationName="activity")
   @Override
   public void reportJobStart(final ReportJobStartInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
       final Job job = jobPersistence.getJob(input.getJobId());
       jobTracker.trackSync(job, JobState.STARTED);
     } catch (final IOException e) {
@@ -320,8 +345,10 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public void ensureCleanJobState(final EnsureCleanJobStateInput input) {
+    TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
     failNonTerminalJobs(input.getConnectionId());
   }
 

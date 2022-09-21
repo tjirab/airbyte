@@ -10,6 +10,7 @@ import static io.airbyte.persistence.job.models.Job.REPLICATION_TYPES;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import com.google.common.annotations.VisibleForTesting;
+import datadog.trace.api.Trace;
 import io.airbyte.commons.features.FeatureFlags;
 import io.airbyte.config.StandardSync;
 import io.airbyte.config.StandardSync.Status;
@@ -20,11 +21,13 @@ import io.airbyte.persistence.job.models.Job;
 import io.airbyte.persistence.job.models.JobStatus;
 import io.airbyte.persistence.job.models.JobWithStatusAndTimestamp;
 import io.airbyte.validation.json.JsonValidationException;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.temporal.exception.RetryableException;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -56,8 +59,10 @@ public class AutoDisableConnectionActivityImpl implements AutoDisableConnectionA
   // failures, and that the connection's first job is at least that many days old
   // Notifications will be sent if a connection is disabled or warned if it has reached halfway to
   // disable limits
+  @Trace(operationName="activity")
   @Override
   public AutoDisableConnectionOutput autoDisableFailingConnection(final AutoDisableConnectionActivityInput input) {
+    TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
     if (featureFlags.autoDisablesFailingConnections()) {
       try {
         // if connection is already inactive, no need to disable

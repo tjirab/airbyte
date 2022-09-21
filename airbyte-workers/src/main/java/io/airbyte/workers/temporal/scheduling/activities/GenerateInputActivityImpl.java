@@ -4,6 +4,7 @@
 
 package io.airbyte.workers.temporal.scheduling.activities;
 
+import datadog.trace.api.Trace;
 import io.airbyte.commons.json.Jsons;
 import io.airbyte.config.JobConfig.ConfigType;
 import io.airbyte.config.JobResetConnectionConfig;
@@ -14,11 +15,13 @@ import io.airbyte.persistence.job.JobPersistence;
 import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
 import io.airbyte.persistence.job.models.Job;
 import io.airbyte.persistence.job.models.JobRunConfig;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.WorkerConstants;
 import io.airbyte.workers.temporal.TemporalWorkflowUtils;
 import io.airbyte.workers.temporal.exception.RetryableException;
 import io.micronaut.context.annotation.Requires;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AllArgsConstructor;
@@ -34,9 +37,11 @@ public class GenerateInputActivityImpl implements GenerateInputActivity {
   @Inject
   private JobPersistence jobPersistence;
 
+  @Trace(operationName="activity")
   @Override
   public GeneratedJobInput getSyncWorkflowInput(final SyncInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
       final long jobId = input.getJobId();
       final int attempt = input.getAttemptId();
       final JobSyncConfig config;
@@ -102,8 +107,10 @@ public class GenerateInputActivityImpl implements GenerateInputActivity {
     }
   }
 
+  @Trace(operationName="activity")
   @Override
   public GeneratedJobInput getSyncWorkflowInputWithAttemptNumber(final SyncInputWithAttemptNumber input) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
     return getSyncWorkflowInput(new SyncInput(
         input.getAttemptNumber(),
         input.getJobId()));

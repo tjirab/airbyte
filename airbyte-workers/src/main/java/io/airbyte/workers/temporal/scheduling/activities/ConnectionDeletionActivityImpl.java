@@ -4,12 +4,15 @@
 
 package io.airbyte.workers.temporal.scheduling.activities;
 
+import datadog.trace.api.Trace;
 import io.airbyte.config.persistence.ConfigNotFoundException;
 import io.airbyte.validation.json.JsonValidationException;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.helper.ConnectionHelper;
 import io.airbyte.workers.temporal.exception.RetryableException;
 import io.micronaut.context.annotation.Requires;
 import java.io.IOException;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AllArgsConstructor;
@@ -25,9 +28,11 @@ public class ConnectionDeletionActivityImpl implements ConnectionDeletionActivit
   @Inject
   private ConnectionHelper connectionHelper;
 
+  @Trace(operationName="activity")
   @Override
   public void deleteConnection(final ConnectionDeletionInput input) {
     try {
+      TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
       connectionHelper.deleteConnection(input.getConnectionId());
     } catch (final JsonValidationException | ConfigNotFoundException | IOException e) {
       throw new RetryableException(e);

@@ -4,6 +4,7 @@
 
 package io.airbyte.workers.temporal.sync;
 
+import datadog.trace.api.Trace;
 import io.airbyte.api.client.AirbyteApiClient;
 import io.airbyte.api.client.invoker.generated.ApiException;
 import io.airbyte.api.client.model.generated.JobIdRequestBody;
@@ -19,6 +20,7 @@ import io.airbyte.config.persistence.split_secrets.SecretsHydrator;
 import io.airbyte.persistence.job.models.IntegrationLauncherConfig;
 import io.airbyte.persistence.job.models.JobRunConfig;
 import io.airbyte.workers.ContainerOrchestratorConfig;
+import io.airbyte.workers.TraceUtils;
 import io.airbyte.workers.Worker;
 import io.airbyte.workers.WorkerConfigs;
 import io.airbyte.workers.general.DbtTransformationRunner;
@@ -32,6 +34,7 @@ import io.micronaut.context.annotation.Value;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -71,11 +74,13 @@ public class DbtTransformationActivityImpl implements DbtTransformationActivity 
   @Inject
   private AirbyteApiClient airbyteApiClient;
 
+  @Trace(operationName="activity")
   @Override
   public Void run(final JobRunConfig jobRunConfig,
                   final IntegrationLauncherConfig destinationLauncherConfig,
                   final ResourceRequirements resourceRequirements,
                   final OperatorDbtInput input) {
+    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "destination.docker-image", destinationLauncherConfig.getDockerImage()));
     final ActivityExecutionContext context = Activity.getExecutionContext();
     return temporalUtils.withBackgroundHeartbeat(
         () -> {
