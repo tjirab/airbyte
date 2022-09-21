@@ -149,7 +149,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
 
   private Duration workflowDelay;
 
-  @Trace(operationName = "workflow", resourceName = "ConnectionManagerWorkflowImpl")
+  @Trace(operationName="workflow")
   @Override
   public void run(final ConnectionUpdaterInput connectionUpdaterInput) throws RetryableException {
     try {
@@ -451,6 +451,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
     connectionUpdaterInput.setSkipScheduling(false);
   }
 
+  @Trace(operationName="workflow")
   @Override
   public void submitManualSync() {
     if (workflowState.isRunning()) {
@@ -461,6 +462,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
     workflowState.setSkipScheduling(true);
   }
 
+  @Trace(operationName="workflow")
   @Override
   public void cancelJob() {
     if (!workflowState.isRunning()) {
@@ -471,17 +473,20 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
     cancellableSyncWorkflow.cancel();
   }
 
+  @Trace(operationName="workflow")
   @Override
   public void deleteConnection() {
     workflowState.setDeleted(true);
     cancelJob();
   }
 
+  @Trace(operationName="workflow")
   @Override
   public void connectionUpdated() {
     workflowState.setUpdated(true);
   }
 
+  @Trace(operationName="workflow")
   @Override
   public void resetConnection() {
     // Assumes that the streams_reset has already been populated with streams to reset for this
@@ -495,16 +500,19 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
     }
   }
 
+  @Trace(operationName="workflow")
   @Override
   public void retryFailedActivity() {
     workflowState.setRetryFailedActivity(true);
   }
 
+  @Trace(operationName="workflow")
   @Override
   public WorkflowState getState() {
     return workflowState;
   }
 
+  @Trace(operationName="workflow")
   @Override
   public JobInformation getJobInformation() {
     final Long jobId = workflowInternalState.getJobId();
@@ -514,6 +522,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
         attemptNumber == null ? NON_RUNNING_ATTEMPT_ID : attemptNumber);
   }
 
+  @Trace(operationName="workflow")
   @Override
   public QuarantinedInformation getQuarantinedInformation() {
     final Long jobId = workflowInternalState.getJobId();

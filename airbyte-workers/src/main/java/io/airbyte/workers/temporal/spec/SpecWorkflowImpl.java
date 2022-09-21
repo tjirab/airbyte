@@ -19,7 +19,7 @@ public class SpecWorkflowImpl implements SpecWorkflow {
   @TemporalActivityStub(activityOptionsBeanName = "specActivityOptions")
   private SpecActivity activity;
 
-  @Trace(operationName = "workflow", resourceName = "SpecWorkflowImpl")
+  @Trace(operationName="workflow")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig, final IntegrationLauncherConfig launcherConfig) {
     TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "docker-image", launcherConfig.getDockerImage()));

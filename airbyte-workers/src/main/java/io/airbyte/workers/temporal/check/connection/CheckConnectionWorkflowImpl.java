@@ -27,7 +27,7 @@ public class CheckConnectionWorkflowImpl implements CheckConnectionWorkflow {
   @TemporalActivityStub(activityOptionsBeanName = "checkActivityOptions")
   private CheckConnectionActivity activity;
 
-  @Trace(operationName="workflow", resourceName="CheckConnectionWorkflowImpl")
+  @Trace(operationName="workflow")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig,
                                 final IntegrationLauncherConfig launcherConfig,
