@@ -3,9 +3,20 @@ import { createTestConnection } from "commands/connection";
 import { deleteDestination } from "commands/destination";
 import { deleteSource } from "commands/source";
 import { initialSetupCompleted } from "commands/workspaces";
-import { confirmStreamConfigurationChangedPopup, selectSchedule, fillOutDestinationPrefix, goToReplicationTab, setupDestinationNamespaceCustomFormat, selectSyncMode, checkSuccessResult, searchStream, selectCursorField, checkCursorField} from "pages/replicationPage";
-import { openSourceDestinationFromGrid, goToSourcePage} from "pages/sourcePage";
-import { goToSettingsPage } from "pages/settingsConnectionPage"
+import {
+  confirmStreamConfigurationChangedPopup,
+  selectSchedule,
+  fillOutDestinationPrefix,
+  goToReplicationTab,
+  setupDestinationNamespaceCustomFormat,
+  selectSyncMode,
+  checkSuccessResult,
+  searchStream,
+  selectCursorField,
+  checkCursorField,
+} from "pages/replicationPage";
+import { openSourceDestinationFromGrid, goToSourcePage } from "pages/sourcePage";
+import { goToSettingsPage } from "pages/settingsConnectionPage";
 import { ceil } from "cypress/types/lodash";
 
 describe("Connection main actions", () => {
@@ -71,14 +82,14 @@ describe("Connection main actions", () => {
 
     searchStream("admins");
     selectSyncMode("Incremental", "Append");
-    selectCursorField('email');
+    selectCursorField("email");
 
     submitButtonClick();
     confirmStreamConfigurationChangedPopup();
-    
+
     cy.wait(5000);
     cy.wait("@updateConnection").then((interception) => {
-      assert.isNotNull(interception.response?.statusCode, '200');    
+      assert.isNotNull(interception.response?.statusCode, "200");
     });
 
     checkSuccessResult();
@@ -113,7 +124,7 @@ describe("Connection main actions", () => {
 
     searchStream("admins");
     selectSyncMode("Incremental", "Deduped + history");
-    selectCursorField('email');
+    selectCursorField("email");
 
     submitButtonClick();
     confirmStreamConfigurationChangedPopup();
@@ -121,7 +132,7 @@ describe("Connection main actions", () => {
     cy.wait(5000);
 
     cy.wait("@updateConnection").then((interception) => {
-      assert.isNotNull(interception.response?.statusCode, '200');    
+      assert.isNotNull(interception.response?.statusCode, "200");
     });
 
     checkSuccessResult();
@@ -144,12 +155,9 @@ describe("Connection main actions", () => {
     cy.intercept("/api/v1/web_backend/connections/update").as("updateConnection");
 
     const sourceName = appendRandomString("Test update connection PokeAPI source cypress");
-    const destName = appendRandomString("Test update connection Local JSON destination cypress")
+    const destName = appendRandomString("Test update connection Local JSON destination cypress");
 
-    createTestConnection(
-      sourceName,
-      destName
-    );
+    createTestConnection(sourceName, destName);
 
     goToSourcePage();
     openSourceDestinationFromGrid(sourceName);
@@ -157,9 +165,9 @@ describe("Connection main actions", () => {
 
     goToReplicationTab();
 
-    selectSchedule('Every hour');
-    fillOutDestinationPrefix('auto_test');
-    setupDestinationNamespaceCustomFormat('_test');
+    selectSchedule("Every hour");
+    fillOutDestinationPrefix("auto_test");
+    setupDestinationNamespaceCustomFormat("_test");
     selectSyncMode("Full refresh", "Append");
 
     submitButtonClick();
@@ -168,13 +176,15 @@ describe("Connection main actions", () => {
     cy.wait("@updateConnection").then((interception) => {
       assert.isNotNull(interception.response?.statusCode, "200");
       expect(interception.request.method).to.eq("POST");
-      expect(interception.request).property("body").to.contain({
-        name: sourceName + " <> " + destName + "Connection name",
-        prefix: "auto_test",
-        namespaceDefinition: "customformat",
-        namespaceFormat: "${SOURCE_NAMESPACE}_test",
-        status: "active",
-      });
+      expect(interception.request)
+        .property("body")
+        .to.contain({
+          name: sourceName + " <> " + destName + "Connection name",
+          prefix: "auto_test",
+          namespaceDefinition: "customformat",
+          namespaceFormat: "${SOURCE_NAMESPACE}_test",
+          status: "active",
+        });
       expect(interception.request.body.scheduleData.basicSchedule).to.contain({
         units: 1,
         timeUnit: "hours",
