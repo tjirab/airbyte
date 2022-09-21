@@ -4,7 +4,6 @@
 
 package io.airbyte.workers;
 
-import datadog.opentracing.DDTracer;
 import io.airbyte.analytics.Deployment;
 import io.airbyte.analytics.TrackingClientSingleton;
 import io.airbyte.commons.version.AirbyteVersion;
@@ -39,7 +38,6 @@ import io.micronaut.context.event.ApplicationEventListener;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.discovery.event.ServiceReadyEvent;
 import io.micronaut.scheduling.TaskExecutors;
-import io.opentracing.util.GlobalTracer;
 import io.temporal.api.workflowservice.v1.DescribeNamespaceRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
@@ -148,8 +146,6 @@ public class ApplicationInitializer implements ApplicationEventListener<ServiceR
   private String temporalCloudNamespace;
   @Value("${airbyte.data.sync.task-queue}")
   private String syncTaskQueue;
-  @Inject
-  private DDTracer dataDogTracer;
 
   @Override
   public void onApplicationEvent(final ServiceReadyEvent event) {
@@ -176,10 +172,6 @@ public class ApplicationInitializer implements ApplicationEventListener<ServiceR
 
   private void initializeCommonDependencies() throws ExecutionException, InterruptedException, TimeoutException {
     log.info("Initializing common worker dependencies.");
-
-    // Register DataDog tracer
-    GlobalTracer.register(dataDogTracer);
-    datadog.trace.api.GlobalTracer.registerIfAbsent(dataDogTracer);
 
     // Initialize the metric client
     MetricClientFactory.initialize(MetricEmittingApps.WORKER);
