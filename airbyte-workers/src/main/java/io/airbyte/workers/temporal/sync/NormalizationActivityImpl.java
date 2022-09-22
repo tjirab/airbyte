@@ -79,7 +79,7 @@ public class NormalizationActivityImpl implements NormalizationActivity {
   @Inject
   private AirbyteApiClient airbyteApiClient;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public NormalizationSummary normalize(final JobRunConfig jobRunConfig,
                                         final IntegrationLauncherConfig destinationLauncherConfig,
@@ -119,7 +119,7 @@ public class NormalizationActivityImpl implements NormalizationActivity {
         () -> context);
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public NormalizationInput generateNormalizationInput(final StandardSyncInput syncInput, final StandardSyncOutput syncOutput) {
     return new NormalizationInput()

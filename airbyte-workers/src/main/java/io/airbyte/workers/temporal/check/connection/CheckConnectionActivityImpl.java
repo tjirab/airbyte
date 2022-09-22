@@ -60,7 +60,7 @@ public class CheckConnectionActivityImpl implements CheckConnectionActivity {
   @Value("${airbyte.version}")
   private String airbyteVersion;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public ConnectorJobOutput runWithJobOutput(final CheckConnectionInput args) {
     TraceUtils.addTagsToTrace(Map.of("job-id", args.getJobRunConfig().getJobId(), "docker-image", args.getLauncherConfig().getDockerImage()));
@@ -85,7 +85,7 @@ public class CheckConnectionActivityImpl implements CheckConnectionActivity {
     return temporalAttemptExecution.get();
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public StandardCheckConnectionOutput run(final CheckConnectionInput args) {
     TraceUtils.addTagsToTrace(Map.of("job-id", args.getJobRunConfig().getJobId(), "docker-image", args.getLauncherConfig().getDockerImage()));

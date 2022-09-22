@@ -37,7 +37,7 @@ public class GenerateInputActivityImpl implements GenerateInputActivity {
   @Inject
   private JobPersistence jobPersistence;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public GeneratedJobInput getSyncWorkflowInput(final SyncInput input) {
     try {
@@ -107,7 +107,7 @@ public class GenerateInputActivityImpl implements GenerateInputActivity {
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public GeneratedJobInput getSyncWorkflowInputWithAttemptNumber(final SyncInputWithAttemptNumber input) {
     TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));

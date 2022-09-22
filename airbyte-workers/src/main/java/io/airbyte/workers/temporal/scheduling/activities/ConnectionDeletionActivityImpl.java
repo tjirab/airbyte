@@ -28,7 +28,7 @@ public class ConnectionDeletionActivityImpl implements ConnectionDeletionActivit
   @Inject
   private ConnectionHelper connectionHelper;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void deleteConnection(final ConnectionDeletionInput input) {
     try {

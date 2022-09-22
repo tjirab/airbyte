@@ -63,7 +63,7 @@ public class DiscoverCatalogActivityImpl implements DiscoverCatalogActivity {
   @Value("${airbyte.version}")
   private String airbyteVersion;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig,
                                 final IntegrationLauncherConfig launcherConfig,

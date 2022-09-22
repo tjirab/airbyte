@@ -171,4 +171,5 @@ public class ApplicationBeanFactory {
   private <T> T convertToEnum(final String value, final Function<String, T> creatorFunction, final T defaultValue) {
     return StringUtils.isNotEmpty(value) ? creatorFunction.apply(value.toUpperCase(Locale.ROOT)) : defaultValue;
   }
+
 }

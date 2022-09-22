@@ -74,7 +74,7 @@ public class DbtTransformationActivityImpl implements DbtTransformationActivity 
   @Inject
   private AirbyteApiClient airbyteApiClient;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public Void run(final JobRunConfig jobRunConfig,
                   final IntegrationLauncherConfig destinationLauncherConfig,

@@ -56,7 +56,7 @@ public class ConfigFetchActivityImpl implements ConfigFetchActivity {
   @Named("currentSecondsSupplier")
   private Supplier<Long> currentSecondsSupplier;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public ScheduleRetrieverOutput getTimeToWait(final ScheduleRetrieverInput input) {
     try {
@@ -158,7 +158,7 @@ public class ConfigFetchActivityImpl implements ConfigFetchActivity {
 
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public GetMaxAttemptOutput getMaxAttempt() {
     return new GetMaxAttemptOutput(syncJobMaxAttempts);

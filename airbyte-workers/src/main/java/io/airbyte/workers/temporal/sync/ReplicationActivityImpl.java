@@ -97,13 +97,14 @@ public class ReplicationActivityImpl implements ReplicationActivity {
   @Inject
   private AirbyteApiClient airbyteApiClient;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public StandardSyncOutput replicate(final JobRunConfig jobRunConfig,
                                       final IntegrationLauncherConfig sourceLauncherConfig,
                                       final IntegrationLauncherConfig destinationLauncherConfig,
                                       final StandardSyncInput syncInput) {
-    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "source.docker-image", sourceLauncherConfig.getDockerImage(), "destination.docker-image", destinationLauncherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "source.docker-image", sourceLauncherConfig.getDockerImage(),
+        "destination.docker-image", destinationLauncherConfig.getDockerImage()));
     final ActivityExecutionContext context = Activity.getExecutionContext();
     return temporalUtils.withBackgroundHeartbeat(
         () -> {

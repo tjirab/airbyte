@@ -56,7 +56,7 @@ public class SpecActivityImpl implements SpecActivity {
   @Value("${airbyte.version}")
   private String airbyteVersion;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig, final IntegrationLauncherConfig launcherConfig) {
     TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId()));

@@ -26,7 +26,7 @@ public class WorkflowConfigActivityImpl implements WorkflowConfigActivity {
             defaultValue = "600")
   private Long workflowRestartDelaySeconds;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public Duration getWorkflowRestartDelaySeconds() {
     return Duration.ofSeconds(workflowRestartDelaySeconds);

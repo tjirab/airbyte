@@ -92,7 +92,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
   @Inject
   private JobErrorReporter jobErrorReporter;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public JobCreationOutput createNewJob(final JobCreationInput input) {
     try {
@@ -155,7 +155,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public AttemptCreationOutput createNewAttempt(final AttemptCreationInput input) throws RetryableException {
     try {
@@ -175,7 +175,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public AttemptNumberCreationOutput createNewAttemptNumber(final AttemptCreationInput input) throws RetryableException {
     try {
@@ -195,7 +195,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void jobSuccess(final JobSuccessInput input) {
     try {
@@ -224,7 +224,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void jobSuccessWithAttemptNumber(final JobSuccessInputWithAttemptNumber input) {
     TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
@@ -235,7 +235,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
         input.getStandardSyncOutput()));
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void jobFailure(final JobFailureInput input) {
     try {
@@ -260,7 +260,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void attemptFailure(final AttemptFailureInput input) {
     try {
@@ -290,7 +290,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void attemptFailureWithAttemptNumber(final AttemptNumberFailureInput input) {
     TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
@@ -302,7 +302,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
         input.getAttemptFailureSummary()));
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void jobCancelled(final JobCancelledInput input) {
     try {
@@ -323,7 +323,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void jobCancelledWithAttemptNumber(final JobCancelledInputWithAttemptNumber input) {
     TraceUtils.addTagsToTrace(Map.of("job-id", input.getJobId()));
@@ -334,7 +334,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
         input.getAttemptFailureSummary()));
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void reportJobStart(final ReportJobStartInput input) {
     try {
@@ -346,7 +346,7 @@ public class JobCreationAndStatusUpdateActivityImpl implements JobCreationAndSta
     }
   }
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void ensureCleanJobState(final EnsureCleanJobStateInput input) {
     TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));

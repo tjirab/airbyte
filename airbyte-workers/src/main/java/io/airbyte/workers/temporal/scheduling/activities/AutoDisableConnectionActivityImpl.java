@@ -59,7 +59,7 @@ public class AutoDisableConnectionActivityImpl implements AutoDisableConnectionA
   // failures, and that the connection's first job is at least that many days old
   // Notifications will be sent if a connection is disabled or warned if it has reached halfway to
   // disable limits
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public AutoDisableConnectionOutput autoDisableFailingConnection(final AutoDisableConnectionActivityInput input) {
     TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));

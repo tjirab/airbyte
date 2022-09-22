@@ -42,7 +42,7 @@ public class RecordMetricActivityImpl implements RecordMetricActivity {
    *
    * @param metricInput The information about the metric to record.
    */
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public void recordWorkflowCountMetric(final RecordMetricInput metricInput) {
     TraceUtils.addTagsToTrace(Map.of("connection-id", metricInput.getConnectionUpdaterInput().getConnectionId()));

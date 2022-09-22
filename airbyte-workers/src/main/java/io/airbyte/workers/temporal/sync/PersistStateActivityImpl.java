@@ -7,8 +7,8 @@ package io.airbyte.workers.temporal.sync;
 import static io.airbyte.config.helpers.StateMessageHelper.isMigration;
 import static io.airbyte.workers.helper.StateConverter.convertClientStateTypeToInternal;
 
-import datadog.trace.api.Trace;
 import com.google.common.annotations.VisibleForTesting;
+import datadog.trace.api.Trace;
 import io.airbyte.api.client.AirbyteApiClient;
 import io.airbyte.api.client.invoker.generated.ApiException;
 import io.airbyte.api.client.model.generated.ConnectionIdRequestBody;
@@ -44,7 +44,7 @@ public class PersistStateActivityImpl implements PersistStateActivity {
   @Inject
   private FeatureFlags featureFlags;
 
-  @Trace(operationName="activity")
+  @Trace(operationName = "activity")
   @Override
   public boolean persist(final UUID connectionId, final StandardSyncOutput syncOutput, final ConfiguredAirbyteCatalog configuredCatalog) {
     TraceUtils.addTagsToTrace(Map.of("connection-id", connectionId.toString()));
