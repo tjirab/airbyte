@@ -84,7 +84,7 @@ public class NormalizationActivityImpl implements NormalizationActivity {
   public NormalizationSummary normalize(final JobRunConfig jobRunConfig,
                                         final IntegrationLauncherConfig destinationLauncherConfig,
                                         final NormalizationInput input) {
-    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "destination.docker-image", destinationLauncherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job_id", jobRunConfig.getJobId(), "destination.docker_image", destinationLauncherConfig.getDockerImage()));
     final ActivityExecutionContext context = Activity.getExecutionContext();
     return temporalUtils.withBackgroundHeartbeat(() -> {
       final var fullDestinationConfig = secretsHydrator.hydrate(input.getDestinationConfiguration());

@@ -47,7 +47,7 @@ public class PersistStateActivityImpl implements PersistStateActivity {
   @Trace(operationName = "activity")
   @Override
   public boolean persist(final UUID connectionId, final StandardSyncOutput syncOutput, final ConfiguredAirbyteCatalog configuredCatalog) {
-    TraceUtils.addTagsToTrace(Map.of("connection-id", connectionId.toString()));
+    TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId.toString()));
     final State state = syncOutput.getState();
     if (state != null) {
       // todo: these validation logic should happen on server side.

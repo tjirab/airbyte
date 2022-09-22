@@ -60,7 +60,7 @@ public class ConfigFetchActivityImpl implements ConfigFetchActivity {
   @Override
   public ScheduleRetrieverOutput getTimeToWait(final ScheduleRetrieverInput input) {
     try {
-      TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
+      TraceUtils.addTagsToTrace(Map.of("connection_id", input.getConnectionId()));
       final StandardSync standardSync = configRepository.getStandardSync(input.getConnectionId());
 
       if (standardSync.getScheduleType() != null) {

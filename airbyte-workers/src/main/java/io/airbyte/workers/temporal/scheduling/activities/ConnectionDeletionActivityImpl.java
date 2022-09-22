@@ -32,7 +32,7 @@ public class ConnectionDeletionActivityImpl implements ConnectionDeletionActivit
   @Override
   public void deleteConnection(final ConnectionDeletionInput input) {
     try {
-      TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
+      TraceUtils.addTagsToTrace(Map.of("connection_id", input.getConnectionId()));
       connectionHelper.deleteConnection(input.getConnectionId());
     } catch (final JsonValidationException | ConfigNotFoundException | IOException e) {
       throw new RetryableException(e);

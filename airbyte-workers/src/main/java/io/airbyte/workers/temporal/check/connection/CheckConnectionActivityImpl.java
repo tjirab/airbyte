@@ -63,7 +63,7 @@ public class CheckConnectionActivityImpl implements CheckConnectionActivity {
   @Trace(operationName = "activity")
   @Override
   public ConnectorJobOutput runWithJobOutput(final CheckConnectionInput args) {
-    TraceUtils.addTagsToTrace(Map.of("job-id", args.getJobRunConfig().getJobId(), "docker-image", args.getLauncherConfig().getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job_id", args.getJobRunConfig().getJobId(), "docker_image", args.getLauncherConfig().getDockerImage()));
     final JsonNode fullConfig = secretsHydrator.hydrate(args.getConnectionConfiguration().getConnectionConfiguration());
 
     final StandardCheckConnectionInput input = new StandardCheckConnectionInput()
@@ -88,7 +88,7 @@ public class CheckConnectionActivityImpl implements CheckConnectionActivity {
   @Trace(operationName = "activity")
   @Override
   public StandardCheckConnectionOutput run(final CheckConnectionInput args) {
-    TraceUtils.addTagsToTrace(Map.of("job-id", args.getJobRunConfig().getJobId(), "docker-image", args.getLauncherConfig().getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job_id", args.getJobRunConfig().getJobId(), "docker_image", args.getLauncherConfig().getDockerImage()));
     final ConnectorJobOutput output = runWithJobOutput(args);
     if (output.getFailureReason() != null) {
       return new StandardCheckConnectionOutput().withStatus(Status.FAILED).withMessage("Error checking connection");

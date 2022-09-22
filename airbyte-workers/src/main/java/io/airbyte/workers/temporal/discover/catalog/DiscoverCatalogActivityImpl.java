@@ -68,7 +68,7 @@ public class DiscoverCatalogActivityImpl implements DiscoverCatalogActivity {
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig,
                                 final IntegrationLauncherConfig launcherConfig,
                                 final StandardDiscoverCatalogInput config) {
-    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "docker-image", launcherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job_id", jobRunConfig.getJobId(), "docker_image", launcherConfig.getDockerImage()));
     final JsonNode fullConfig = secretsHydrator.hydrate(config.getConnectionConfiguration());
 
     final StandardDiscoverCatalogInput input = new StandardDiscoverCatalogInput()

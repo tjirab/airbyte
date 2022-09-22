@@ -47,7 +47,7 @@ public class TraceUtils {
   public static void addTagsToTrace(final Span span, final Map<String, Object> tags, final String tagPrefix) {
     if (span != null) {
       tags.entrySet().forEach(entry -> {
-        span.setTag(String.format("%s.%s", tagPrefix, entry.getKey()), entry.getValue().toString());
+        span.setTag(String.format("airbyte.%s.%s", tagPrefix, entry.getKey()), entry.getValue().toString());
       });
     }
   }

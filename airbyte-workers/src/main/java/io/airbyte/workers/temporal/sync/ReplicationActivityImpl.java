@@ -103,8 +103,8 @@ public class ReplicationActivityImpl implements ReplicationActivity {
                                       final IntegrationLauncherConfig sourceLauncherConfig,
                                       final IntegrationLauncherConfig destinationLauncherConfig,
                                       final StandardSyncInput syncInput) {
-    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "source.docker-image", sourceLauncherConfig.getDockerImage(),
-        "destination.docker-image", destinationLauncherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job_id", jobRunConfig.getJobId(), "source.docker_image", sourceLauncherConfig.getDockerImage(),
+        "destination.docker_image", destinationLauncherConfig.getDockerImage()));
     final ActivityExecutionContext context = Activity.getExecutionContext();
     return temporalUtils.withBackgroundHeartbeat(
         () -> {

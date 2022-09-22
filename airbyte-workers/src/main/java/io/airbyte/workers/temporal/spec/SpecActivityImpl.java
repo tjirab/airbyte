@@ -59,7 +59,7 @@ public class SpecActivityImpl implements SpecActivity {
   @Trace(operationName = "activity")
   @Override
   public ConnectorJobOutput run(final JobRunConfig jobRunConfig, final IntegrationLauncherConfig launcherConfig) {
-    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId()));
+    TraceUtils.addTagsToTrace(Map.of("job_id", jobRunConfig.getJobId()));
     final Supplier<JobGetSpecConfig> inputSupplier = () -> new JobGetSpecConfig().withDockerImage(launcherConfig.getDockerImage());
 
     final ActivityExecutionContext context = Activity.getExecutionContext();

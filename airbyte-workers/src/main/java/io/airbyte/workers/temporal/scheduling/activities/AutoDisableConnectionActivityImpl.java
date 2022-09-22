@@ -62,7 +62,7 @@ public class AutoDisableConnectionActivityImpl implements AutoDisableConnectionA
   @Trace(operationName = "activity")
   @Override
   public AutoDisableConnectionOutput autoDisableFailingConnection(final AutoDisableConnectionActivityInput input) {
-    TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
+    TraceUtils.addTagsToTrace(Map.of("connection_id", input.getConnectionId()));
     if (featureFlags.autoDisablesFailingConnections()) {
       try {
         // if connection is already inactive, no need to disable

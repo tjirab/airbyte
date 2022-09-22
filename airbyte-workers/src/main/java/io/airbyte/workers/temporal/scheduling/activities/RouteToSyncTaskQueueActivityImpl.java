@@ -20,7 +20,7 @@ public class RouteToSyncTaskQueueActivityImpl implements RouteToSyncTaskQueueAct
   @Trace(operationName = "activity")
   @Override
   public RouteToSyncTaskQueueOutput route(final RouteToSyncTaskQueueInput input) {
-    TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId()));
+    TraceUtils.addTagsToTrace(Map.of("connection_id", input.getConnectionId()));
     final String taskQueueForConnectionId = routerService.getTaskQueue(input.getConnectionId());
 
     return new RouteToSyncTaskQueueOutput(taskQueueForConnectionId);

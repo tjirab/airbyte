@@ -153,7 +153,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
   @Override
   public void run(final ConnectionUpdaterInput connectionUpdaterInput) throws RetryableException {
     try {
-      TraceUtils.addTagsToTrace(Map.of("connection-id", connectionUpdaterInput.getConnectionId()));
+      TraceUtils.addTagsToTrace(Map.of("connection_id", connectionUpdaterInput.getConnectionId()));
       recordMetric(new RecordMetricInput(connectionUpdaterInput, Optional.empty(), OssMetricsRegistry.TEMPORAL_WORKFLOW_ATTEMPT, null));
       workflowDelay = getWorkflowRestartDelaySeconds();
 
@@ -454,6 +454,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
   @Trace(operationName = "workflow")
   @Override
   public void submitManualSync() {
+    TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId));
     if (workflowState.isRunning()) {
       log.info("Can't schedule a manual workflow if a sync is running for connection {}", connectionId);
       return;
@@ -465,6 +466,7 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
   @Trace(operationName = "workflow")
   @Override
   public void cancelJob() {
+    TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId));
     if (!workflowState.isRunning()) {
       log.info("Can't cancel a non-running sync for connection {}", connectionId);
       return;
@@ -476,6 +478,9 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
   @Trace(operationName = "workflow")
   @Override
   public void deleteConnection() {
+    if (connectionId != null) {
+      TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId));
+    }
     workflowState.setDeleted(true);
     cancelJob();
   }
@@ -483,12 +488,19 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
   @Trace(operationName = "workflow")
   @Override
   public void connectionUpdated() {
+    if (connectionId != null) {
+      TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId));
+    }
     workflowState.setUpdated(true);
   }
 
   @Trace(operationName = "workflow")
   @Override
   public void resetConnection() {
+    if (connectionId != null) {
+      TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId));
+    }
+
     // Assumes that the streams_reset has already been populated with streams to reset for this
     // connection
 
@@ -503,33 +515,41 @@ public class ConnectionManagerWorkflowImpl implements ConnectionManagerWorkflow 
   @Trace(operationName = "workflow")
   @Override
   public void retryFailedActivity() {
+    if (connectionId != null) {
+      TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId));
+    }
     workflowState.setRetryFailedActivity(true);
   }
 
   @Trace(operationName = "workflow")
   @Override
   public WorkflowState getState() {
+    if (connectionId != null) {
+      TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId));
+    }
     return workflowState;
   }
 
   @Trace(operationName = "workflow")
   @Override
   public JobInformation getJobInformation() {
-    final Long jobId = workflowInternalState.getJobId();
+    final Long jobId = workflowInternalState.getJobId() != null ? workflowInternalState.getJobId() : NON_RUNNING_JOB_ID;
     final Integer attemptNumber = workflowInternalState.getAttemptNumber();
+    TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId, "job_id", jobId));
     return new JobInformation(
-        jobId == null ? NON_RUNNING_JOB_ID : jobId,
+        jobId,
         attemptNumber == null ? NON_RUNNING_ATTEMPT_ID : attemptNumber);
   }
 
   @Trace(operationName = "workflow")
   @Override
   public QuarantinedInformation getQuarantinedInformation() {
-    final Long jobId = workflowInternalState.getJobId();
+    final Long jobId = workflowInternalState.getJobId() != null ? workflowInternalState.getJobId() : NON_RUNNING_JOB_ID;
     final Integer attemptNumber = workflowInternalState.getAttemptNumber();
+    TraceUtils.addTagsToTrace(Map.of("connection_id", connectionId, "job_id", jobId));
     return new QuarantinedInformation(
         connectionId,
-        jobId == null ? NON_RUNNING_JOB_ID : jobId,
+        jobId,
         attemptNumber == null ? NON_RUNNING_ATTEMPT_ID : attemptNumber,
         workflowState.isQuarantined());
   }

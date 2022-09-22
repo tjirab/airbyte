@@ -80,7 +80,7 @@ public class DbtTransformationActivityImpl implements DbtTransformationActivity 
                   final IntegrationLauncherConfig destinationLauncherConfig,
                   final ResourceRequirements resourceRequirements,
                   final OperatorDbtInput input) {
-    TraceUtils.addTagsToTrace(Map.of("job-id", jobRunConfig.getJobId(), "destination.docker-image", destinationLauncherConfig.getDockerImage()));
+    TraceUtils.addTagsToTrace(Map.of("job_id", jobRunConfig.getJobId(), "destination.docker_image", destinationLauncherConfig.getDockerImage()));
     final ActivityExecutionContext context = Activity.getExecutionContext();
     return temporalUtils.withBackgroundHeartbeat(
         () -> {

@@ -32,7 +32,7 @@ public class NormalizationSummaryCheckActivityImpl implements NormalizationSumma
   @Override
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public boolean shouldRunNormalization(final Long jobId, final Long attemptNumber, final Optional<Long> numCommittedRecords) throws IOException {
-    TraceUtils.addTagsToTrace(Map.of("job-id", jobId));
+    TraceUtils.addTagsToTrace(Map.of("job_id", jobId));
 
     // if job persistence is unavailable, default to running normalization
     if (jobPersistence.isEmpty()) {

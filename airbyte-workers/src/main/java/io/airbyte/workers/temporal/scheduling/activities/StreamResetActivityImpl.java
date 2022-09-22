@@ -29,7 +29,7 @@ public class StreamResetActivityImpl implements StreamResetActivity {
   @Trace(operationName = "activity")
   @Override
   public void deleteStreamResetRecordsForJob(final DeleteStreamResetRecordsForJobInput input) {
-    TraceUtils.addTagsToTrace(Map.of("connection-id", input.getConnectionId(), "job-id", input.getJobId()));
+    TraceUtils.addTagsToTrace(Map.of("connection_id", input.getConnectionId(), "job_id", input.getJobId()));
     streamResetRecordsHelper.deleteStreamResetRecordsForJob(input.getJobId(), input.getConnectionId());
   }
 
