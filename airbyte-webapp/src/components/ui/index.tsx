@@ -1,6 +1,7 @@
 export * from "./Button";
 export * from "./Card";
 export * from "./CheckBox";
+export * from "./CollapsablePanel";
 export * from "./DropDown";
 export * from "./Popout";
 export * from "./Input";
