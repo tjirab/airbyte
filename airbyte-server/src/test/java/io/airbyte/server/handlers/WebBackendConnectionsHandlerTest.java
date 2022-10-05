@@ -73,8 +73,10 @@ import io.airbyte.config.StandardSync;
 import io.airbyte.config.persistence.ConfigNotFoundException;
 import io.airbyte.config.persistence.ConfigRepository;
 import io.airbyte.protocol.models.CatalogHelpers;
+import io.airbyte.protocol.models.ConfiguredAirbyteCatalog;
 import io.airbyte.protocol.models.Field;
 import io.airbyte.protocol.models.JsonSchemaType;
+import io.airbyte.server.handlers.helpers.CatalogConverter;
 import io.airbyte.server.helpers.ConnectionHelpers;
 import io.airbyte.server.helpers.DestinationDefinitionHelpers;
 import io.airbyte.server.helpers.DestinationHelpers;
@@ -741,9 +743,10 @@ class WebBackendConnectionsHandlerTest {
 
     // state is per-stream
     final ConnectionIdRequestBody connectionIdRequestBody = new ConnectionIdRequestBody().connectionId(expected.getConnectionId());
+    final ConfiguredAirbyteCatalog configuredAirbyteCatalog = ConnectionHelpers.generateBasicConfiguredAirbyteCatalog();
     when(stateHandler.getState(connectionIdRequestBody)).thenReturn(new ConnectionState().stateType(ConnectionStateType.STREAM));
     when(configRepository.getConfiguredCatalogForConnection(expected.getConnectionId()))
-        .thenReturn(ConnectionHelpers.generateBasicConfiguredAirbyteCatalog());
+        .thenReturn(configuredAirbyteCatalog);
 
     final CatalogDiff catalogDiff = new CatalogDiff().transforms(List.of());
     when(connectionsHandler.getDiff(any(), any(), any())).thenReturn(catalogDiff);
@@ -770,7 +773,9 @@ class WebBackendConnectionsHandlerTest {
     assertEquals(expectedWithNewSchema.getSyncCatalog(), result.getSyncCatalog());
 
     final ConnectionIdRequestBody connectionId = new ConnectionIdRequestBody().connectionId(result.getConnectionId());
-    verify(connectionsHandler).getDiff(expected.getSyncCatalog(), expectedWithNewSchema.getSyncCatalog());
+
+    verify(connectionsHandler).getDiff(expected.getSyncCatalog(), expectedWithNewSchema.getSyncCatalog(),
+        CatalogConverter.toProtocol(result.getSyncCatalog()));
     verify(connectionsHandler).getConfigurationDiff(expected.getSyncCatalog(), expectedWithNewSchema.getSyncCatalog());
     verify(schedulerHandler, times(0)).resetConnection(connectionId);
     verify(schedulerHandler, times(0)).syncConnection(connectionId);
